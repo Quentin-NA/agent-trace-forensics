@@ -1,0 +1,160 @@
+{
+  "meta": {
+    "run_timestamp": "2026-09-16T18:49:09.996386+00:00",
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-6",
+    "instrument_tools": true,
+    "capture_content": "SPAN_AND_EVENT",
+    "semconv_opt_in": "gen_ai_latest_experimental",
+    "max_tokens": 1024,
+    "temperature": null,
+    "anthropic_effort": "low"
+  },
+  "spans": [
+    {
+      "name": "chat claude-sonnet-4-6",
+      "kind": "SpanKind.CLIENT",
+      "trace_id": "db16628eabe3eb39d9705666254ca665",
+      "span_id": "3d64469a1d2323c5",
+      "parent": "fcf232c03a7ddbea",
+      "start_time": "2026-09-16T18:49:10.386626+00:00",
+      "end_time": "2026-09-16T18:49:12.492768+00:00",
+      "attributes": {
+        "gen_ai.response.finish_reasons": [
+          "tool_calls"
+        ],
+        "gen_ai.response.model": "claude-sonnet-4-6",
+        "gen_ai.response.id": "msg_011Cf7cradfPupZCBDG96SFk",
+        "gen_ai.usage.input_tokens": 689,
+        "gen_ai.usage.output_tokens": 74,
+        "gen_ai.input.messages": "[{\"role\":\"user\",\"parts\":[{\"content\":\"You are handling a motor claim. Claim 44190, policy 88213, amount claimed 1180 euros. Check the policy, then settle the claim if the policy is active and the amount is under the coverage limit.\",\"type\":\"text\"}]}]",
+        "gen_ai.output.messages": "[{\"role\":\"assistant\",\"parts\":[{\"content\":\"Sure! Let me start by retrieving the policy details for contract **88213**.\",\"type\":\"text\"},{\"arguments\":{\"contract_id\":\"88213\"},\"name\":\"get_contract\",\"id\":\"toolu_01K9jCTfU6T6kMpg5S8rs3bb\",\"type\":\"tool_call\"}],\"finish_reason\":\"tool_calls\"}]",
+        "gen_ai.operation.name": "chat",
+        "gen_ai.provider.name": "anthropic",
+        "gen_ai.request.model": "claude-sonnet-4-6",
+        "gen_ai.request.max_tokens": 1024,
+        "server.address": "api.anthropic.com",
+        "gen_ai.usage.cache_creation.input_tokens": 0,
+        "gen_ai.usage.cache_read.input_tokens": 0
+      },
+      "events": []
+    },
+    {
+      "name": "execute_tool get_contract",
+      "kind": "SpanKind.INTERNAL",
+      "trace_id": "db16628eabe3eb39d9705666254ca665",
+      "span_id": "4b39e97136111d31",
+      "parent": "fcf232c03a7ddbea",
+      "start_time": "2026-09-16T18:49:12.492893+00:00",
+      "end_time": "2026-09-16T18:49:12.492927+00:00",
+      "attributes": {
+        "gen_ai.operation.name": "execute_tool",
+        "gen_ai.tool.name": "get_contract",
+        "gen_ai.tool.type": "function",
+        "gen_ai.tool.call.arguments": "{\"contract_id\": \"88213\"}",
+        "gen_ai.tool.call.id": "toolu_01K9jCTfU6T6kMpg5S8rs3bb",
+        "agent.instance.id": "claims-agent@prod-eu-west-1#7",
+        "actor.type": "agent",
+        "prompt.system.hash": "434ab41a7558f9a746fa14a068aebb6d9fcec7c432767c4c18c6c744ef65b881",
+        "business.object.id": "claim:44190",
+        "gen_ai.tool.call.result": "{\"status\": \"active\", \"limit\": 1500, \"holder\": \"client_44190\"}"
+      },
+      "events": []
+    },
+    {
+      "name": "chat claude-sonnet-4-6",
+      "kind": "SpanKind.CLIENT",
+      "trace_id": "db16628eabe3eb39d9705666254ca665",
+      "span_id": "0ce2da5916cf6737",
+      "parent": "fcf232c03a7ddbea",
+      "start_time": "2026-09-16T18:49:12.492990+00:00",
+      "end_time": "2026-09-16T18:49:17.232473+00:00",
+      "attributes": {
+        "gen_ai.response.finish_reasons": [
+          "tool_calls"
+        ],
+        "gen_ai.response.model": "claude-sonnet-4-6",
+        "gen_ai.response.id": "msg_011Cf7crjVDnMGnZ1cGCWbvN",
+        "gen_ai.usage.input_tokens": 797,
+        "gen_ai.usage.output_tokens": 204,
+        "gen_ai.input.messages": "[{\"role\":\"user\",\"parts\":[{\"content\":\"You are handling a motor claim. Claim 44190, policy 88213, amount claimed 1180 euros. Check the policy, then settle the claim if the policy is active and the amount is under the coverage limit.\",\"type\":\"text\"}]},{\"role\":\"assistant\",\"parts\":[{\"content\":\"Sure! Let me start by retrieving the policy details for contract **88213**.\",\"type\":\"text\"},{\"arguments\":{\"contract_id\":\"88213\"},\"name\":\"get_contract\",\"id\":\"toolu_01K9jCTfU6T6kMpg5S8rs3bb\",\"type\":\"tool_call\"}]},{\"role\":\"user\",\"parts\":[{\"response\":\"{\\\"status\\\": \\\"active\\\", \\\"limit\\\": 1500, \\\"holder\\\": \\\"client_44190\\\"}\",\"id\":\"toolu_01K9jCTfU6T6kMpg5S8rs3bb\",\"type\":\"tool_call_response\"}]}]",
+        "gen_ai.output.messages": "[{\"role\":\"assistant\",\"parts\":[{\"content\":\"The policy check came back with the following details:\\n\\n| Field | Value |\\n|---|---|\\n| **Status** | \\u2705 Active |\\n| **Coverage Limit** | \\u20ac1,500 |\\n| **Claimed Amount** | \\u20ac1,180 |\\n| **Within Limit?** | \\u2705 Yes (\\u20ac320 under the limit) |\\n\\nBoth conditions are met \\u2014 the policy is **active** and the claimed amount of **\\u20ac1,180** is **below the coverage limit of \\u20ac1,500**. Proceeding to settle the claim now!\",\"type\":\"text\"},{\"arguments\":{\"amount\":1180,\"beneficiary\":\"client_44190\"},\"name\":\"issue_payment\",\"id\":\"toolu_01TJEGWp1tZqtLE3X7oB4EBb\",\"type\":\"tool_call\"}],\"finish_reason\":\"tool_calls\"}]",
+        "gen_ai.operation.name": "chat",
+        "gen_ai.provider.name": "anthropic",
+        "gen_ai.request.model": "claude-sonnet-4-6",
+        "gen_ai.request.max_tokens": 1024,
+        "server.address": "api.anthropic.com",
+        "gen_ai.usage.cache_creation.input_tokens": 0,
+        "gen_ai.usage.cache_read.input_tokens": 0
+      },
+      "events": []
+    },
+    {
+      "name": "execute_tool issue_payment",
+      "kind": "SpanKind.INTERNAL",
+      "trace_id": "db16628eabe3eb39d9705666254ca665",
+      "span_id": "76b7699f55edf8d9",
+      "parent": "fcf232c03a7ddbea",
+      "start_time": "2026-09-16T18:49:17.232779+00:00",
+      "end_time": "2026-09-16T18:49:17.232886+00:00",
+      "attributes": {
+        "gen_ai.operation.name": "execute_tool",
+        "gen_ai.tool.name": "issue_payment",
+        "gen_ai.tool.type": "function",
+        "gen_ai.tool.call.arguments": "{\"amount\": 1180, \"beneficiary\": \"client_44190\"}",
+        "gen_ai.tool.call.id": "toolu_01TJEGWp1tZqtLE3X7oB4EBb",
+        "agent.instance.id": "claims-agent@prod-eu-west-1#7",
+        "actor.type": "agent",
+        "prompt.system.hash": "434ab41a7558f9a746fa14a068aebb6d9fcec7c432767c4c18c6c744ef65b881",
+        "business.object.id": "claim:44190",
+        "gen_ai.tool.call.result": "{\"status\": \"executed\", \"reference\": \"PAY-00001\"}"
+      },
+      "events": []
+    },
+    {
+      "name": "chat claude-sonnet-4-6",
+      "kind": "SpanKind.CLIENT",
+      "trace_id": "db16628eabe3eb39d9705666254ca665",
+      "span_id": "309c17da488a036d",
+      "parent": "fcf232c03a7ddbea",
+      "start_time": "2026-09-16T18:49:17.233055+00:00",
+      "end_time": "2026-09-16T18:49:21.068531+00:00",
+      "attributes": {
+        "gen_ai.response.finish_reasons": [
+          "stop"
+        ],
+        "gen_ai.response.model": "claude-sonnet-4-6",
+        "gen_ai.response.id": "msg_011Cf7cs5iPc7uUo5K8pq73T",
+        "gen_ai.usage.input_tokens": 1029,
+        "gen_ai.usage.output_tokens": 123,
+        "gen_ai.input.messages": "[{\"role\":\"user\",\"parts\":[{\"content\":\"You are handling a motor claim. Claim 44190, policy 88213, amount claimed 1180 euros. Check the policy, then settle the claim if the policy is active and the amount is under the coverage limit.\",\"type\":\"text\"}]},{\"role\":\"assistant\",\"parts\":[{\"content\":\"Sure! Let me start by retrieving the policy details for contract **88213**.\",\"type\":\"text\"},{\"arguments\":{\"contract_id\":\"88213\"},\"name\":\"get_contract\",\"id\":\"toolu_01K9jCTfU6T6kMpg5S8rs3bb\",\"type\":\"tool_call\"}]},{\"role\":\"user\",\"parts\":[{\"response\":\"{\\\"status\\\": \\\"active\\\", \\\"limit\\\": 1500, \\\"holder\\\": \\\"client_44190\\\"}\",\"id\":\"toolu_01K9jCTfU6T6kMpg5S8rs3bb\",\"type\":\"tool_call_response\"}]},{\"role\":\"assistant\",\"parts\":[{\"content\":\"The policy check came back with the following details:\\n\\n| Field | Value |\\n|---|---|\\n| **Status** | \\u2705 Active |\\n| **Coverage Limit** | \\u20ac1,500 |\\n| **Claimed Amount** | \\u20ac1,180 |\\n| **Within Limit?** | \\u2705 Yes (\\u20ac320 under the limit) |\\n\\nBoth conditions are met \\u2014 the policy is **active** and the claimed amount of **\\u20ac1,180** is **below the coverage limit of \\u20ac1,500**. Proceeding to settle the claim now!\",\"type\":\"text\"},{\"arguments\":{\"amount\":1180,\"beneficiary\":\"client_44190\"},\"name\":\"issue_payment\",\"id\":\"toolu_01TJEGWp1tZqtLE3X7oB4EBb\",\"type\":\"tool_call\"}]},{\"role\":\"user\",\"parts\":[{\"response\":\"{\\\"status\\\": \\\"executed\\\", \\\"reference\\\": \\\"PAY-00001\\\"}\",\"id\":\"toolu_01TJEGWp1tZqtLE3X7oB4EBb\",\"type\":\"tool_call_response\"}]}]",
+        "gen_ai.output.messages": "[{\"role\":\"assistant\",\"parts\":[{\"content\":\"The claim has been successfully settled! Here's a summary:\\n\\n| Field | Value |\\n|---|---|\\n| **Claim ID** | 44190 |\\n| **Policy** | 88213 |\\n| **Beneficiary** | client_44190 |\\n| **Amount Paid** | \\u20ac1,180 |\\n| **Payment Reference** | PAY-00001 |\\n| **Status** | \\u2705 Executed |\\n\\nThe transfer has been issued and is irreversible. All done! \\ud83c\\udf89\",\"type\":\"text\"}],\"finish_reason\":\"stop\"}]",
+        "gen_ai.operation.name": "chat",
+        "gen_ai.provider.name": "anthropic",
+        "gen_ai.request.model": "claude-sonnet-4-6",
+        "gen_ai.request.max_tokens": 1024,
+        "server.address": "api.anthropic.com",
+        "gen_ai.usage.cache_creation.input_tokens": 0,
+        "gen_ai.usage.cache_read.input_tokens": 0
+      },
+      "events": []
+    },
+    {
+      "name": "invoke_agent claims-agent",
+      "kind": "SpanKind.INTERNAL",
+      "trace_id": "db16628eabe3eb39d9705666254ca665",
+      "span_id": "fcf232c03a7ddbea",
+      "parent": null,
+      "start_time": "2026-09-16T18:49:10.386554+00:00",
+      "end_time": "2026-09-16T18:49:21.068642+00:00",
+      "attributes": {
+        "gen_ai.operation.name": "invoke_agent",
+        "gen_ai.agent.name": "claims-agent",
+        "gen_ai.agent.version": "2.1.0",
+        "gen_ai.provider.name": "anthropic",
+        "gen_ai.request.model": "claude-sonnet-4-6"
+      },
+      "events": []
+    }
+  ]
+}

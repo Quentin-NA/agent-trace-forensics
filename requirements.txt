@@ -1,0 +1,17 @@
+# Pinned versions: these are the ones that produce the numbers in the README.
+# Run of 2026-09-16. Any version bump may change the results.
+
+# OTel core
+opentelemetry-api==1.44.0
+opentelemetry-sdk==1.44.0
+
+# GenAI instrumentations - dedicated opentelemetry-python-genai repository.
+# WARNING: do NOT install opentelemetry-instrumentation-openai-v2, the older
+# package from the contrib repository, which is deprecated.
+opentelemetry-instrumentation-genai-openai==1.1b0
+opentelemetry-instrumentation-genai-anthropic==1.1b1
+opentelemetry-util-genai==1.1b0
+
+# Provider SDKs (install the ones you test)
+anthropic==1.5.0
+openai==3.13.0

@@ -1,0 +1,543 @@
+=== 1/4: anthropic (baseline) ===
+
+========================================================================
+FORENSIC READINESS REPORT
+========================================================================
+
+4 spans, 1 trace(s).
+0 EXECUTED tool action(s) traced (execute_tool span) - this is the only proof of execution.
+2 model decision(s) detected elsewhere, nested in gen_ai.output.messages - this is NOT proof of execution.
+
+--- Decision 1: get_contract (no execution proven) ----
+  NESTED   gen_ai.tool.name = get_contract   (in gen_ai.output.messages, not at the normalised location)
+  NESTED   gen_ai.tool.call.id = toolu_013mD8RUenVDeNtKDSN2efbD   (in gen_ai.output.messages, not at the normalised location)
+  NESTED   gen_ai.tool.call.arguments = {'contract_id': '88213'}   (in gen_ai.output.messages, not at the normalised location)
+  MISSING  gen_ai.tool.call.result
+           -> we do not know whether the action succeeded, nor what it returned
+
+--- Decision 2: issue_payment (no execution proven) ----
+  NESTED   gen_ai.tool.name = issue_payment   (in gen_ai.output.messages, not at the normalised location)
+  NESTED   gen_ai.tool.call.id = toolu_018RmF8kpxzy8vambkdmyMzz   (in gen_ai.output.messages, not at the normalised location)
+  NESTED   gen_ai.tool.call.arguments = {'amount': 1180, 'beneficiary': 'client_44190'}   (in gen_ai.output.messages, not at the normalised location)
+  MISSING  gen_ai.tool.call.result
+           -> we do not know whether the action succeeded, nor what it returned
+
+  What this proves: the model's INTENT at time T.
+  What this does NOT prove: that the action was executed, when, nor
+  what the system returned. That is exactly the gap where a dispute
+  takes hold.
+
+========================================================================
+SUMMARY
+========================================================================
+
+Coverage: 4/11 at the normalised location  -  7/11 recoverable in total (4 normalised + 3 nested).
+  Nested in gen_ai.output.messages, outside the normalised location: gen_ai.tool.call.arguments, gen_ai.tool.call.id, gen_ai.tool.name
+
+Absent from the ENTIRE trace (neither normalised nor nested):
+  - gen_ai.tool.call.result  [no execute_tool span: not an opt-in setting, the execution instrumentation is missing]
+  - gen_ai.agent.id
+  - gen_ai.conversation.id
+  - gen_ai.system_instructions  [content capture enabled; absent because the scenario sends no separate system prompt - everything is in the user message]
+
+------------------------------------------------------------------------
+TO INJECT - no convention provides it, absent from this trace:
+  * agent.identity.self_hosted
+      gen_ai.agent.id is reserved for HOSTED agents (Bedrock ARN, GCP Agent Registry). For a self-hosted agent, no attribute exists.
+  * prompt.system.hash
+      hash of the system prompt at the time of the action
+  * config.hash
+      hash of the configuration (temperature, exposed tools, guardrails)
+  * business.object.id
+      link to the business object (claim, order, transaction)
+
+------------------------------------------------------------------------
+ATTRIBUTION
+  Agent attributes are present, but check that they distinguish the
+  agent from the human user it runs under.
+
+------------------------------------------------------------------------
+INTEGRITY
+  These spans are freely mutable and deletable.
+  Nothing here constitutes defensible evidence without hash chaining
+  and signing.
+
+Payments actually issued by the scenario: [{'amount': 1180, 'beneficiary': 'client_44190'}]
+  ^ no span attests these payments. Re-run with --instrument-tools to see the difference.
+
+Full spans written to anthropic.json.new
+
+=== 2/4: anthropic (--instrument-tools) ===
+
+========================================================================
+FORENSIC READINESS REPORT
+========================================================================
+
+6 spans, 1 trace(s).
+2 EXECUTED tool action(s) traced (execute_tool span) - this is the only proof of execution.
+
+--- Action 1: get_contract ----------------------------------------
+  OK       gen_ai.tool.name = get_contract
+  OK       gen_ai.tool.call.id = toolu_01K9jCTfU6T6kMpg5S8rs3bb
+  OK       gen_ai.tool.call.arguments = {"contract_id": "88213"}
+  OK       gen_ai.tool.call.result = {"status": "active", "limit": 1500, "holder": "...
+  MISSING  gen_ai.agent.id
+           -> no stable agent identity
+  OK       gen_ai.agent.name = claims-agent   (inherited<-invoke_agent claims-agent)
+  OK       gen_ai.agent.version = 2.1.0   (inherited<-invoke_agent claims-agent)
+  MISSING  gen_ai.conversation.id
+           -> cannot group the actions of a single session
+  OK       gen_ai.provider.name = anthropic   (inherited<-invoke_agent claims-agent)
+  OK       gen_ai.request.model = claude-sonnet-4-6   (inherited<-invoke_agent claims-agent)
+  MISSING  gen_ai.system_instructions
+           -> system prompt not captured: no way to know under which instructions the agent acted
+
+--- Action 2: issue_payment ---------------------------------------
+  OK       gen_ai.tool.name = issue_payment
+  OK       gen_ai.tool.call.id = toolu_01TJEGWp1tZqtLE3X7oB4EBb
+  OK       gen_ai.tool.call.arguments = {"amount": 1180, "beneficiary": "client_44190"}
+  OK       gen_ai.tool.call.result = {"status": "executed", "reference": "PAY-00001"}
+  MISSING  gen_ai.agent.id
+           -> no stable agent identity
+  OK       gen_ai.agent.name = claims-agent   (inherited<-invoke_agent claims-agent)
+  OK       gen_ai.agent.version = 2.1.0   (inherited<-invoke_agent claims-agent)
+  MISSING  gen_ai.conversation.id
+           -> cannot group the actions of a single session
+  OK       gen_ai.provider.name = anthropic   (inherited<-invoke_agent claims-agent)
+  OK       gen_ai.request.model = claude-sonnet-4-6   (inherited<-invoke_agent claims-agent)
+  MISSING  gen_ai.system_instructions
+           -> system prompt not captured: no way to know under which instructions the agent acted
+
+========================================================================
+SUMMARY
+========================================================================
+
+Coverage: 8/11 at the normalised location  -  8/11 recoverable in total (8 normalised + 0 nested).
+
+Absent from the ENTIRE trace (neither normalised nor nested):
+  - gen_ai.agent.id
+  - gen_ai.conversation.id
+  - gen_ai.system_instructions  [content capture enabled; absent because the scenario sends no separate system prompt - everything is in the user message]
+
+------------------------------------------------------------------------
+TO INJECT - no convention provides it, absent from this trace:
+  * config.hash
+      hash of the configuration (temperature, exposed tools, guardrails)
+
+Already injected in this trace (--instrument-tools or equivalent): agent.identity.self_hosted, prompt.system.hash, business.object.id
+
+------------------------------------------------------------------------
+ATTRIBUTION
+  Agent attributes are present, but check that they distinguish the
+  agent from the human user it runs under.
+
+------------------------------------------------------------------------
+INTEGRITY
+  These spans are freely mutable and deletable.
+  Nothing here constitutes defensible evidence without hash chaining
+  and signing.
+
+Payments actually issued by the scenario: [{'amount': 1180, 'beneficiary': 'client_44190'}]
+
+Full spans written to anthropic_instr.json.new
+
+=== 3/4: openai (baseline) ===
+
+========================================================================
+FORENSIC READINESS REPORT
+========================================================================
+
+4 spans, 1 trace(s).
+0 EXECUTED tool action(s) traced (execute_tool span) - this is the only proof of execution.
+2 model decision(s) detected elsewhere, nested in gen_ai.output.messages - this is NOT proof of execution.
+
+--- Decision 1: get_contract (no execution proven) ----
+  NESTED   gen_ai.tool.name = get_contract   (in gen_ai.output.messages, not at the normalised location)
+  NESTED   gen_ai.tool.call.id = call_oKUhlH5gFcZISQ4e37OU0G9W   (in gen_ai.output.messages, not at the normalised location)
+  NESTED   gen_ai.tool.call.arguments = {'contract_id': '88213'}   (in gen_ai.output.messages, not at the normalised location)
+  MISSING  gen_ai.tool.call.result
+           -> we do not know whether the action succeeded, nor what it returned
+
+--- Decision 2: issue_payment (no execution proven) ----
+  NESTED   gen_ai.tool.name = issue_payment   (in gen_ai.output.messages, not at the normalised location)
+  NESTED   gen_ai.tool.call.id = call_w4RLuEku6AG3Jn64z1ycYriZ   (in gen_ai.output.messages, not at the normalised location)
+  NESTED   gen_ai.tool.call.arguments = {'amount': 1180, 'beneficiary': 'client_44190'}   (in gen_ai.output.messages, not at the normalised location)
+  MISSING  gen_ai.tool.call.result
+           -> we do not know whether the action succeeded, nor what it returned
+
+  What this proves: the model's INTENT at time T.
+  What this does NOT prove: that the action was executed, when, nor
+  what the system returned. That is exactly the gap where a dispute
+  takes hold.
+
+========================================================================
+SUMMARY
+========================================================================
+
+Coverage: 4/11 at the normalised location  -  7/11 recoverable in total (4 normalised + 3 nested).
+  Nested in gen_ai.output.messages, outside the normalised location: gen_ai.tool.call.arguments, gen_ai.tool.call.id, gen_ai.tool.name
+
+Absent from the ENTIRE trace (neither normalised nor nested):
+  - gen_ai.tool.call.result  [no execute_tool span: not an opt-in setting, the execution instrumentation is missing]
+  - gen_ai.agent.id
+  - gen_ai.conversation.id
+  - gen_ai.system_instructions  [content capture enabled; absent because the scenario sends no separate system prompt - everything is in the user message]
+
+------------------------------------------------------------------------
+TO INJECT - no convention provides it, absent from this trace:
+  * agent.identity.self_hosted
+      gen_ai.agent.id is reserved for HOSTED agents (Bedrock ARN, GCP Agent Registry). For a self-hosted agent, no attribute exists.
+  * prompt.system.hash
+      hash of the system prompt at the time of the action
+  * config.hash
+      hash of the configuration (temperature, exposed tools, guardrails)
+  * business.object.id
+      link to the business object (claim, order, transaction)
+
+------------------------------------------------------------------------
+ATTRIBUTION
+  Agent attributes are present, but check that they distinguish the
+  agent from the human user it runs under.
+
+------------------------------------------------------------------------
+INTEGRITY
+  These spans are freely mutable and deletable.
+  Nothing here constitutes defensible evidence without hash chaining
+  and signing.
+
+Payments actually issued by the scenario: [{'amount': 1180, 'beneficiary': 'client_44190'}]
+  ^ no span attests these payments. Re-run with --instrument-tools to see the difference.
+
+Full spans written to openai.json.new
+
+=== 4/4: openai (--instrument-tools) ===
+
+========================================================================
+FORENSIC READINESS REPORT
+========================================================================
+
+6 spans, 1 trace(s).
+2 EXECUTED tool action(s) traced (execute_tool span) - this is the only proof of execution.
+
+--- Action 1: get_contract ----------------------------------------
+  OK       gen_ai.tool.name = get_contract
+  OK       gen_ai.tool.call.id = call_SKvEQON2mtNtUOPb59KdtJpQ
+  OK       gen_ai.tool.call.arguments = {"contract_id": "88213"}
+  OK       gen_ai.tool.call.result = {"status": "active", "limit": 1500, "holder": "...
+  MISSING  gen_ai.agent.id
+           -> no stable agent identity
+  OK       gen_ai.agent.name = claims-agent   (inherited<-invoke_agent claims-agent)
+  OK       gen_ai.agent.version = 2.1.0   (inherited<-invoke_agent claims-agent)
+  MISSING  gen_ai.conversation.id
+           -> cannot group the actions of a single session
+  OK       gen_ai.provider.name = openai   (inherited<-invoke_agent claims-agent)
+  OK       gen_ai.request.model = gpt-4o-mini   (inherited<-invoke_agent claims-agent)
+  MISSING  gen_ai.system_instructions
+           -> system prompt not captured: no way to know under which instructions the agent acted
+
+--- Action 2: issue_payment ---------------------------------------
+  OK       gen_ai.tool.name = issue_payment
+  OK       gen_ai.tool.call.id = call_VRF8LS9DOPMXk0ufjNyrwX3w
+  OK       gen_ai.tool.call.arguments = {"amount": 1180, "beneficiary": "client_44190"}
+  OK       gen_ai.tool.call.result = {"status": "executed", "reference": "PAY-00001"}
+  MISSING  gen_ai.agent.id
+           -> no stable agent identity
+  OK       gen_ai.agent.name = claims-agent   (inherited<-invoke_agent claims-agent)
+  OK       gen_ai.agent.version = 2.1.0   (inherited<-invoke_agent claims-agent)
+  MISSING  gen_ai.conversation.id
+           -> cannot group the actions of a single session
+  OK       gen_ai.provider.name = openai   (inherited<-invoke_agent claims-agent)
+  OK       gen_ai.request.model = gpt-4o-mini   (inherited<-invoke_agent claims-agent)
+  MISSING  gen_ai.system_instructions
+           -> system prompt not captured: no way to know under which instructions the agent acted
+
+========================================================================
+SUMMARY
+========================================================================
+
+Coverage: 8/11 at the normalised location  -  8/11 recoverable in total (8 normalised + 0 nested).
+
+Absent from the ENTIRE trace (neither normalised nor nested):
+  - gen_ai.agent.id
+  - gen_ai.conversation.id
+  - gen_ai.system_instructions  [content capture enabled; absent because the scenario sends no separate system prompt - everything is in the user message]
+
+------------------------------------------------------------------------
+TO INJECT - no convention provides it, absent from this trace:
+  * config.hash
+      hash of the configuration (temperature, exposed tools, guardrails)
+
+Already injected in this trace (--instrument-tools or equivalent): agent.identity.self_hosted, prompt.system.hash, business.object.id
+
+------------------------------------------------------------------------
+ATTRIBUTION
+  Agent attributes are present, but check that they distinguish the
+  agent from the human user it runs under.
+
+------------------------------------------------------------------------
+INTEGRITY
+  These spans are freely mutable and deletable.
+  Nothing here constitutes defensible evidence without hash chaining
+  and signing.
+
+Payments actually issued by the scenario: [{'amount': 1180, 'beneficiary': 'client_44190'}]
+
+Full spans written to openai_instr.json.new
+
+=== Comparison 1/4: anthropic vs openai (baseline) ===
+==========================================================================
+DIVERGENCES  anthropic  vs  openai
+==========================================================================
+
+/!\ RUNS NOT COMPARABLE - the gaps below are polluted:
+    temperature : None vs 0.0
+    Re-run both with the same settings.
+
+--------------------------------------------------------------------------
+STRUCTURE
+                                      anthropic                 openai
+spans                                         4                      4
+traces                                        1                      1
+roots                                         1                      1
+actions                                       0                      0
+span types                    chat,invoke_agent      chat,invoke_agent
+
+--------------------------------------------------------------------------
+ATTRIBUTES
+
+  (1 attribute(s) removed from the table, already reported as a scenario asymmetry above: gen_ai.request.temperature)
+
+  Present on anthropic, ABSENT on openai:
+    gen_ai.usage.cache_creation.input_tokens
+    gen_ai.usage.cache_read.input_tokens
+
+  Present on openai, ABSENT on anthropic:
+    gen_ai.tool.definitions [!]
+        -> we do not know what the agent was ALLOWED to do at the time
+    openai.response.service_tier
+    openai.response.system_fingerprint
+
+  Common: 14 attributes.
+
+--------------------------------------------------------------------------
+WHERE THE TOOL CALL ARGUMENTS LIVE
+
+  anthropic:
+    gen_ai.output.messages
+        nested in parts[].arguments/id/name/type
+        {"contract_id": "88213"}
+    gen_ai.input.messages
+        nested in parts[].arguments/id/name/type
+        {"contract_id": "88213"}
+
+  openai:
+    gen_ai.output.messages
+        nested in parts[].arguments/id/name/type
+        {"contract_id": "88213"}
+    gen_ai.input.messages
+        nested in parts[].arguments/id/name/type
+        {"contract_id": "88213"}
+
+==========================================================================
+Every [!] line is a piece of security information lost on one
+provider and retained on the other. Every different location for
+the same information is a rule to write into the span processor's
+normalisation table.
+
+=== Comparison 2/4: anthropic vs openai (--instrument-tools) ===
+==========================================================================
+DIVERGENCES  anthropic  vs  openai
+==========================================================================
+
+/!\ RUNS NOT COMPARABLE - the gaps below are polluted:
+    temperature : None vs 0.0
+    Re-run both with the same settings.
+
+--------------------------------------------------------------------------
+STRUCTURE
+                                      anthropic                 openai
+spans                                         6                      6
+traces                                        1                      1
+roots                                         1                      1
+actions                                       2                      2
+span types               chat,execute_tool,invoke_agent chat,execute_tool,invoke_agent
+
+--------------------------------------------------------------------------
+ATTRIBUTES
+
+  (1 attribute(s) removed from the table, already reported as a scenario asymmetry above: gen_ai.request.temperature)
+
+  Present on anthropic, ABSENT on openai:
+    gen_ai.usage.cache_creation.input_tokens
+    gen_ai.usage.cache_read.input_tokens
+
+  Present on openai, ABSENT on anthropic:
+    gen_ai.tool.definitions [!]
+        -> we do not know what the agent was ALLOWED to do at the time
+    openai.response.service_tier
+    openai.response.system_fingerprint
+
+  Common: 23 attributes.
+
+--------------------------------------------------------------------------
+WHERE THE TOOL CALL ARGUMENTS LIVE
+
+  anthropic:
+    gen_ai.output.messages
+        nested in parts[].arguments/id/name/type
+        {"contract_id": "88213"}
+    gen_ai.tool.call.arguments
+        normalised location
+        {"contract_id": "88213"}
+    gen_ai.input.messages
+        nested in parts[].arguments/id/name/type
+        {"contract_id": "88213"}
+
+  openai:
+    gen_ai.output.messages
+        nested in parts[].arguments/id/name/type
+        {"contract_id": "88213"}
+    gen_ai.tool.call.arguments
+        normalised location
+        {"contract_id": "88213"}
+    gen_ai.input.messages
+        nested in parts[].arguments/id/name/type
+        {"contract_id": "88213"}
+
+==========================================================================
+Every [!] line is a piece of security information lost on one
+provider and retained on the other. Every different location for
+the same information is a rule to write into the span processor's
+normalisation table.
+
+=== Comparison 3/4: anthropic before/after --instrument-tools ===
+==========================================================================
+DIVERGENCES  anthropic<anthropic.json.new>  vs  anthropic<anthropic_instr.json.new>
+==========================================================================
+
+/!\ RUNS NOT COMPARABLE - the gaps below are polluted:
+    instrument_tools : False vs True
+    Re-run both with the same settings.
+
+--------------------------------------------------------------------------
+STRUCTURE
+                         anthropic<anthropic.json.new> anthropic<anthropic_instr.json.new>
+spans                                         4                      6  <<
+traces                                        1                      1
+roots                                         1                      1
+actions                                       0                      2  <<
+span types                    chat,invoke_agent chat,execute_tool,invoke_agent
+
+--------------------------------------------------------------------------
+ATTRIBUTES
+
+  Present on anthropic<anthropic_instr.json.new>, ABSENT on anthropic<anthropic.json.new>:
+    actor.type
+    agent.instance.id
+    business.object.id
+    gen_ai.tool.call.arguments [!]
+        -> we know an action happened, not which one
+    gen_ai.tool.call.id [!]
+        -> cannot link the execution back to the model decision
+    gen_ai.tool.call.result [!]
+        -> we do not know whether the action succeeded
+    gen_ai.tool.name [!]
+        -> we do not know which tool was called
+    gen_ai.tool.type
+    prompt.system.hash
+
+  Common: 16 attributes.
+
+--------------------------------------------------------------------------
+WHERE THE TOOL CALL ARGUMENTS LIVE
+
+  anthropic<anthropic.json.new>:
+    gen_ai.output.messages
+        nested in parts[].arguments/id/name/type
+        {"contract_id": "88213"}
+    gen_ai.input.messages
+        nested in parts[].arguments/id/name/type
+        {"contract_id": "88213"}
+
+  anthropic<anthropic_instr.json.new>:
+    gen_ai.output.messages
+        nested in parts[].arguments/id/name/type
+        {"contract_id": "88213"}
+    gen_ai.tool.call.arguments
+        normalised location
+        {"contract_id": "88213"}
+    gen_ai.input.messages
+        nested in parts[].arguments/id/name/type
+        {"contract_id": "88213"}
+
+==========================================================================
+Every [!] line is a piece of security information lost on one
+provider and retained on the other. Every different location for
+the same information is a rule to write into the span processor's
+normalisation table.
+
+=== Comparison 4/4: openai before/after --instrument-tools ===
+==========================================================================
+DIVERGENCES  openai<openai.json.new>  vs  openai<openai_instr.json.new>
+==========================================================================
+
+/!\ RUNS NOT COMPARABLE - the gaps below are polluted:
+    instrument_tools : False vs True
+    Re-run both with the same settings.
+
+--------------------------------------------------------------------------
+STRUCTURE
+                         openai<openai.json.new> openai<openai_instr.json.new>
+spans                                         4                      6  <<
+traces                                        1                      1
+roots                                         1                      1
+actions                                       0                      2  <<
+span types                    chat,invoke_agent chat,execute_tool,invoke_agent
+
+--------------------------------------------------------------------------
+ATTRIBUTES
+
+  Present on openai<openai_instr.json.new>, ABSENT on openai<openai.json.new>:
+    actor.type
+    agent.instance.id
+    business.object.id
+    gen_ai.tool.call.arguments [!]
+        -> we know an action happened, not which one
+    gen_ai.tool.call.id [!]
+        -> cannot link the execution back to the model decision
+    gen_ai.tool.call.result [!]
+        -> we do not know whether the action succeeded
+    gen_ai.tool.name [!]
+        -> we do not know which tool was called
+    gen_ai.tool.type
+    prompt.system.hash
+
+  Common: 18 attributes.
+
+--------------------------------------------------------------------------
+WHERE THE TOOL CALL ARGUMENTS LIVE
+
+  openai<openai.json.new>:
+    gen_ai.output.messages
+        nested in parts[].arguments/id/name/type
+        {"contract_id": "88213"}
+    gen_ai.input.messages
+        nested in parts[].arguments/id/name/type
+        {"contract_id": "88213"}
+
+  openai<openai_instr.json.new>:
+    gen_ai.output.messages
+        nested in parts[].arguments/id/name/type
+        {"contract_id": "88213"}
+    gen_ai.tool.call.arguments
+        normalised location
+        {"contract_id": "88213"}
+    gen_ai.input.messages
+        nested in parts[].arguments/id/name/type
+        {"contract_id": "88213"}
+
+==========================================================================
+Every [!] line is a piece of security information lost on one
+provider and retained on the other. Every different location for
+the same information is a rule to write into the span processor's
+normalisation table.

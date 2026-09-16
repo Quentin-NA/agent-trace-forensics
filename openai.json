@@ -1,0 +1,122 @@
+{
+  "meta": {
+    "run_timestamp": "2026-09-16T18:49:21.180389+00:00",
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "instrument_tools": false,
+    "capture_content": "SPAN_AND_EVENT",
+    "semconv_opt_in": "gen_ai_latest_experimental",
+    "max_tokens": 1024,
+    "temperature": 0.0,
+    "anthropic_effort": null
+  },
+  "spans": [
+    {
+      "name": "chat gpt-4o-mini",
+      "kind": "SpanKind.CLIENT",
+      "trace_id": "9eae86e739f2e1561861dcdcc88af420",
+      "span_id": "a8ba73a78c0eccbb",
+      "parent": "3d7ed2a1c80ee393",
+      "start_time": "2026-09-16T18:49:21.810196+00:00",
+      "end_time": "2026-09-16T18:49:24.438302+00:00",
+      "attributes": {
+        "gen_ai.operation.name": "chat",
+        "gen_ai.request.model": "gpt-4o-mini",
+        "gen_ai.provider.name": "openai",
+        "server.address": "api.openai.com",
+        "gen_ai.request.temperature": 0.0,
+        "gen_ai.request.max_tokens": 1024,
+        "gen_ai.response.finish_reasons": [
+          "tool_calls"
+        ],
+        "gen_ai.response.model": "gpt-4o-mini-2024-07-18",
+        "gen_ai.response.id": "chatcmpl-EOoz5t2vcQPS0W2vSzQWnUGOqzXS3",
+        "gen_ai.usage.input_tokens": 123,
+        "gen_ai.usage.output_tokens": 16,
+        "gen_ai.input.messages": "[{\"role\":\"user\",\"parts\":[{\"content\":\"You are handling a motor claim. Claim 44190, policy 88213, amount claimed 1180 euros. Check the policy, then settle the claim if the policy is active and the amount is under the coverage limit.\",\"type\":\"text\"}]}]",
+        "gen_ai.output.messages": "[{\"role\":\"assistant\",\"parts\":[{\"arguments\":{\"contract_id\":\"88213\"},\"name\":\"get_contract\",\"id\":\"call_oKUhlH5gFcZISQ4e37OU0G9W\",\"type\":\"tool_call\"}],\"finish_reason\":\"tool_calls\"}]",
+        "gen_ai.tool.definitions": "[{\"name\":\"get_contract\",\"description\":\"Retrieves the status and coverage limit of a policy.\",\"parameters\":{\"type\":\"object\",\"properties\":{\"contract_id\":{\"type\":\"string\"}},\"required\":[\"contract_id\"]},\"type\":\"function\"},{\"name\":\"issue_payment\",\"description\":\"Issues a claim settlement transfer. Irreversible action.\",\"parameters\":{\"type\":\"object\",\"properties\":{\"amount\":{\"type\":\"number\"},\"beneficiary\":{\"type\":\"string\"}},\"required\":[\"amount\",\"beneficiary\"]},\"type\":\"function\"}]",
+        "openai.response.service_tier": "default",
+        "openai.response.system_fingerprint": "fp_8d705a6b96"
+      },
+      "events": []
+    },
+    {
+      "name": "chat gpt-4o-mini",
+      "kind": "SpanKind.CLIENT",
+      "trace_id": "9eae86e739f2e1561861dcdcc88af420",
+      "span_id": "5098624d4c9fb12d",
+      "parent": "3d7ed2a1c80ee393",
+      "start_time": "2026-09-16T18:49:24.438495+00:00",
+      "end_time": "2026-09-16T18:49:25.939793+00:00",
+      "attributes": {
+        "gen_ai.operation.name": "chat",
+        "gen_ai.request.model": "gpt-4o-mini",
+        "gen_ai.provider.name": "openai",
+        "server.address": "api.openai.com",
+        "gen_ai.request.temperature": 0.0,
+        "gen_ai.request.max_tokens": 1024,
+        "gen_ai.response.finish_reasons": [
+          "tool_calls"
+        ],
+        "gen_ai.response.model": "gpt-4o-mini-2024-07-18",
+        "gen_ai.response.id": "chatcmpl-EOoz7oEjz4P00yaL9D4KCjfpCchof",
+        "gen_ai.usage.input_tokens": 169,
+        "gen_ai.usage.output_tokens": 23,
+        "gen_ai.input.messages": "[{\"role\":\"user\",\"parts\":[{\"content\":\"You are handling a motor claim. Claim 44190, policy 88213, amount claimed 1180 euros. Check the policy, then settle the claim if the policy is active and the amount is under the coverage limit.\",\"type\":\"text\"}]},{\"role\":\"assistant\",\"parts\":[{\"arguments\":{\"contract_id\":\"88213\"},\"name\":\"get_contract\",\"id\":\"call_oKUhlH5gFcZISQ4e37OU0G9W\",\"type\":\"tool_call\"}]},{\"role\":\"tool\",\"parts\":[{\"response\":\"{\\\"status\\\": \\\"active\\\", \\\"limit\\\": 1500, \\\"holder\\\": \\\"client_44190\\\"}\",\"id\":\"call_oKUhlH5gFcZISQ4e37OU0G9W\",\"type\":\"tool_call_response\"}]}]",
+        "gen_ai.output.messages": "[{\"role\":\"assistant\",\"parts\":[{\"arguments\":{\"amount\":1180,\"beneficiary\":\"client_44190\"},\"name\":\"issue_payment\",\"id\":\"call_w4RLuEku6AG3Jn64z1ycYriZ\",\"type\":\"tool_call\"}],\"finish_reason\":\"tool_calls\"}]",
+        "gen_ai.tool.definitions": "[{\"name\":\"get_contract\",\"description\":\"Retrieves the status and coverage limit of a policy.\",\"parameters\":{\"type\":\"object\",\"properties\":{\"contract_id\":{\"type\":\"string\"}},\"required\":[\"contract_id\"]},\"type\":\"function\"},{\"name\":\"issue_payment\",\"description\":\"Issues a claim settlement transfer. Irreversible action.\",\"parameters\":{\"type\":\"object\",\"properties\":{\"amount\":{\"type\":\"number\"},\"beneficiary\":{\"type\":\"string\"}},\"required\":[\"amount\",\"beneficiary\"]},\"type\":\"function\"}]",
+        "openai.response.service_tier": "default",
+        "openai.response.system_fingerprint": "fp_8d705a6b96"
+      },
+      "events": []
+    },
+    {
+      "name": "chat gpt-4o-mini",
+      "kind": "SpanKind.CLIENT",
+      "trace_id": "9eae86e739f2e1561861dcdcc88af420",
+      "span_id": "377286365e162369",
+      "parent": "3d7ed2a1c80ee393",
+      "start_time": "2026-09-16T18:49:25.940264+00:00",
+      "end_time": "2026-09-16T18:49:27.563020+00:00",
+      "attributes": {
+        "gen_ai.operation.name": "chat",
+        "gen_ai.request.model": "gpt-4o-mini",
+        "gen_ai.provider.name": "openai",
+        "server.address": "api.openai.com",
+        "gen_ai.request.temperature": 0.0,
+        "gen_ai.request.max_tokens": 1024,
+        "gen_ai.response.finish_reasons": [
+          "stop"
+        ],
+        "gen_ai.response.model": "gpt-4o-mini-2024-07-18",
+        "gen_ai.response.id": "chatcmpl-EOoz955zEqf4oJeFTRWHsfWk9s85U",
+        "gen_ai.usage.input_tokens": 216,
+        "gen_ai.usage.output_tokens": 42,
+        "gen_ai.input.messages": "[{\"role\":\"user\",\"parts\":[{\"content\":\"You are handling a motor claim. Claim 44190, policy 88213, amount claimed 1180 euros. Check the policy, then settle the claim if the policy is active and the amount is under the coverage limit.\",\"type\":\"text\"}]},{\"role\":\"assistant\",\"parts\":[{\"arguments\":{\"contract_id\":\"88213\"},\"name\":\"get_contract\",\"id\":\"call_oKUhlH5gFcZISQ4e37OU0G9W\",\"type\":\"tool_call\"}]},{\"role\":\"tool\",\"parts\":[{\"response\":\"{\\\"status\\\": \\\"active\\\", \\\"limit\\\": 1500, \\\"holder\\\": \\\"client_44190\\\"}\",\"id\":\"call_oKUhlH5gFcZISQ4e37OU0G9W\",\"type\":\"tool_call_response\"}]},{\"role\":\"assistant\",\"parts\":[{\"arguments\":{\"amount\":1180,\"beneficiary\":\"client_44190\"},\"name\":\"issue_payment\",\"id\":\"call_w4RLuEku6AG3Jn64z1ycYriZ\",\"type\":\"tool_call\"}]},{\"role\":\"tool\",\"parts\":[{\"response\":\"{\\\"status\\\": \\\"executed\\\", \\\"reference\\\": \\\"PAY-00001\\\"}\",\"id\":\"call_w4RLuEku6AG3Jn64z1ycYriZ\",\"type\":\"tool_call_response\"}]}]",
+        "gen_ai.output.messages": "[{\"role\":\"assistant\",\"parts\":[{\"content\":\"The policy is active with a coverage limit of 1500 euros. The claim of 1180 euros has been successfully settled, and the payment has been executed with the reference number PAY-00001.\",\"type\":\"text\"}],\"finish_reason\":\"stop\"}]",
+        "gen_ai.tool.definitions": "[{\"name\":\"get_contract\",\"description\":\"Retrieves the status and coverage limit of a policy.\",\"parameters\":{\"type\":\"object\",\"properties\":{\"contract_id\":{\"type\":\"string\"}},\"required\":[\"contract_id\"]},\"type\":\"function\"},{\"name\":\"issue_payment\",\"description\":\"Issues a claim settlement transfer. Irreversible action.\",\"parameters\":{\"type\":\"object\",\"properties\":{\"amount\":{\"type\":\"number\"},\"beneficiary\":{\"type\":\"string\"}},\"required\":[\"amount\",\"beneficiary\"]},\"type\":\"function\"}]",
+        "openai.response.service_tier": "default",
+        "openai.response.system_fingerprint": "fp_8d705a6b96"
+      },
+      "events": []
+    },
+    {
+      "name": "invoke_agent claims-agent",
+      "kind": "SpanKind.INTERNAL",
+      "trace_id": "9eae86e739f2e1561861dcdcc88af420",
+      "span_id": "3d7ed2a1c80ee393",
+      "parent": null,
+      "start_time": "2026-09-16T18:49:21.810079+00:00",
+      "end_time": "2026-09-16T18:49:27.563111+00:00",
+      "attributes": {
+        "gen_ai.operation.name": "invoke_agent",
+        "gen_ai.agent.name": "claims-agent",
+        "gen_ai.agent.version": "2.1.0",
+        "gen_ai.provider.name": "openai",
+        "gen_ai.request.model": "gpt-4o-mini"
+      },
+      "events": []
+    }
+  ]
+}

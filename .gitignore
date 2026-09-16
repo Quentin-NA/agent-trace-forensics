@@ -1,0 +1,23 @@
+# Secrets - must never enter the history
+.env
+.env.*
+!env.example
+
+# Virtual environment
+.venv/
+venv/
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# IDE
+.idea/
+.vscode/
+
+# Partial artefacts from a failed protocol run
+*.json.new
+*.partial
+
+# OS
+.DS_Store
