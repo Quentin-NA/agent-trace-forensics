@@ -311,6 +311,14 @@ after these runs were produced. So for the findings above, that an action
 happened and under which decision is established; when it happened is not.
 Re-running populates the timestamps.
 
+The committed dumps contain prompts and model responses in clear. That is
+deliberate: the scenario is synthetic — an invented policy number, an invented
+claimant, an invented amount — and a provider comparison is only auditable if
+you can read what each provider actually emitted. The inspector injects hashes,
+never content: `prompt.system.hash` is a SHA-256, not a prompt. But `--dump`
+writes spans verbatim. Point it at real traffic and it writes real prompts to
+disk. Redact first.
+
 None of this addresses integrity: the spans produced here are freely mutable
 and deletable. Tamper-evidence — hash chaining, signing — is a separate problem
 and is not solved in this repository.

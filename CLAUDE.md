@@ -78,10 +78,16 @@ These are strict. The repository's credibility depends on them.
 - `.env` is gitignored and stays that way. No API key in code, in tests, in
   comments, in commit messages.
 - Before any push, verify no key has entered the history.
-- `forensic_inspector.py` must never persist prompt or output content in
-  clear. Hashes only. A forensic tool that becomes a GDPR liability is
-  unusable — this constraint is not negotiable and applies to every future
-  component.
+- **Hashes only in what the inspector injects.** `prompt.system.hash` is a
+  hash, not a prompt, and every attribute the inspector adds to a pipeline
+  must stay that way. A forensic tool that becomes a GDPR liability is
+  unusable — this applies to every future component.
+- **`--dump` is the documented exception, and it is opt-in.** It writes spans
+  verbatim, `gen_ai.input.messages` and `gen_ai.output.messages` included,
+  because comparing what two providers emit requires reading what they
+  emitted. The committed dumps are publishable only because the scenario is
+  synthetic. Pointed at real traffic, `--dump` writes real prompts to disk in
+  clear. Redaction is the caller's job, and the README states it.
 - Default to `--provider fake` when testing changes. It needs no key and no
   network. Only run against real providers when the change affects what the
   providers emit.
